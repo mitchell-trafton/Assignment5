@@ -52,6 +52,13 @@ namespace Assignment5
             board[0, 0] = 0;
             solution[0, 0] = 0;
         }
+        /************************
+         * Dummy constructor
+         ***********************/
+        public Sudoku(string filePath)
+        {
+            loadIn(filePath);
+        }
         /**************************************
          * 
          *************************************/
@@ -106,7 +113,7 @@ namespace Assignment5
          * 
          */
 
-        private int save(string filepath)
+        public int save(string filepath)
         {
             string line = "";
             using (StreamReader file = new StreamReader(filepath))
