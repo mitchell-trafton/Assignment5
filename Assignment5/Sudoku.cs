@@ -68,11 +68,12 @@ namespace Assignment5
             {
                 string line;
                 int index = 0;
+                int blockCount = 0; //used for counting the blocks of data read and controlling storage, initial puzzles will have 2, save files will have 3
                 Dictionary<int, int[]> loading = new Dictionary<int, int[]>();
-
-                while ((line = file.ReadLine()) != null)
+                Dictionary<int, bool[]> markers = new Dictionary<int, bool[]>(); // used for labeling the valid changing values for user
+                while ((line = file.ReadLine()) != null && blockCount <=2) // save file will be on 2
                 {
-                    if (line.Length != 0)//detect the blank line that seperates problem and solution
+                    if (line.Length != 0 )//detect the blank line that seperates problem and solution
                     {
                         columns = line.Length;
                         rows = line.Length;
@@ -116,7 +117,7 @@ namespace Assignment5
         public int save(string filepath)
         {
             string line = "";
-            using (StreamReader file = new StreamReader(filepath))
+            using (StreamWriter file = new StreamWriter(filepath))
             {
                 for (int i = 0; i > rows; i++)
                 {
