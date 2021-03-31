@@ -9,7 +9,8 @@ namespace Assignment5
 {
     static class Globals
     {
-        public static string selectedPuzzle;//path to selected puzzle
+        public static string selectedPuzzleLoc;//path to selected puzzle
+        public static Sudoku selectedPuzzle = new Sudoku();//Sudoku object for puzzle being played
 
         public static List<string> get_availible_puzzles(string difficulty = null, bool unused = false)
         {

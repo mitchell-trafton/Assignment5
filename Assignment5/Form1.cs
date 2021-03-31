@@ -73,14 +73,14 @@ namespace Assignment5
         {
             playSpecific_btn.Enabled = true;
 
-            Globals.selectedPuzzle = puzzleSelections[puzzleSelect_lbx.SelectedIndex];
+            Globals.selectedPuzzleLoc = puzzleSelections[puzzleSelect_lbx.SelectedIndex];
         }
 
         private void resumeSelect_lbx_SelectedIndexChanged(object sender, EventArgs e)
         {
             playResume_btn.Enabled = true;
 
-            Globals.selectedPuzzle = puzzleSelections[resumeSelect_lbx.SelectedIndex];
+            Globals.selectedPuzzleLoc = puzzleSelections[resumeSelect_lbx.SelectedIndex];
         }
 
         private void specificDifficulty_cbx_SelectedIndexChanged(object sender, EventArgs e)
@@ -111,7 +111,18 @@ namespace Assignment5
 
             Random rand = new Random(System.DateTime.Now.Millisecond);
 
-            Globals.selectedPuzzle = puzzleSelections[rand.Next() % puzzleSelections.Count];
+            Globals.selectedPuzzleLoc = puzzleSelections[rand.Next() % puzzleSelections.Count];
+        }
+
+        private void LaunchPuzzle()
+        {
+            Globals.selectedPuzzle = new 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            PuzzleForm pz = new PuzzleForm();
+            pz.Show();
         }
     }
 }
