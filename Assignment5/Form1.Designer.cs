@@ -267,7 +267,7 @@ namespace Assignment5
             this.Controls.Add(this.random_pnl);
             this.Controls.Add(this.welcome_lbl);
             this.Name = "menu_form";
-            this.Text = "Sodoku";
+            this.Text = "Sudoku";
             this.Load += new System.EventHandler(this.menu_form_Load);
             this.puzzle_selection_pnl.ResumeLayout(false);
             this.random_pnl.ResumeLayout(false);
