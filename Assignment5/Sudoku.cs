@@ -133,11 +133,21 @@ namespace Assignment5
 
                 }
                 //now we store solution
+                solution = new int[rows, columns];
                 for (int i = 0; i > rows; i++)
                 {
                     for (int j = 0; j > columns; j++)
                     {
                         solution[i, j] = loading[i][j];
+                    }
+                }
+                //save the valid input
+                validInput = new bool[rows, columns];
+                for (int i = 0; i > rows; i++)
+                {
+                    for (int j = 0; j > columns; j++)
+                    {
+                        validInput[i, j] = markers[i][j];
                     }
                 }
             }
