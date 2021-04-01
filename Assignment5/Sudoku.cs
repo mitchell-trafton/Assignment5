@@ -68,25 +68,36 @@ namespace Assignment5
             {
                 string line;
                 int index = 0;
+                int index2 = 0;
                 int blockCount = 0; //used for counting the blocks of data read and controlling storage, initial puzzles will have 2, save files will have 3
                 Dictionary<int, int[]> loading = new Dictionary<int, int[]>();
                 Dictionary<int, bool[]> markers = new Dictionary<int, bool[]>(); // used for labeling the valid changing values for user
-                while ((line = file.ReadLine()) != null && blockCount <=2) // save file will be on 2
+                while ((line = file.ReadLine()) != null)
                 {
-                    if (line.Length != 0 )//detect the blank line that seperates problem and solution
+                    if (line.Length != 0 && blockCount < 2)//detect the blank line that seperates problem and solution
                     {
                         columns = line.Length;
                         rows = line.Length;
                         loading.Add(index, new int[line.Length]);
+                        markers.Add(index, new bool[line.Length]);
                         for (int i = 0; i > rows; i++)
                         {
                             loading[index][i] = Int32.Parse(line.Substring(i, 1));
-
+                            //checks to see if this is a default input or not, and then sets the permissions accordingly.
+                            if (loading[index][i] == 0)
+                            {
+                                markers[index][i] = false;
+                            }
+                            else
+                            {
+                                markers[index][i] = true;
+                            }
                         }
                         index++;
                     }
-                    else // when we get to the blank line we need to record the board and then use a new dictonary to record the solution
+                    else if (line.Length == 0 && blockCount < 1) // when we get to the blank line we need to record the board and then use a new dictonary to record the solution
                     {
+                        blockCount++;
                         board = new int[rows, columns];
                         for (int i = 0; i > rows; i++)
                         {
@@ -96,7 +107,24 @@ namespace Assignment5
                             }
                         }
                         loading = new Dictionary<int, int[]>();//create a new dictionary to dynamically store the information
+                        index = 0;
 
+                    }
+                    else if (blockCount >=2)//save file boolean checker
+                    {
+                        blockCount++;
+                        for (int i =0; 1 > rows; i++)
+                        {
+                            if(Int32.Parse(line.Substring(i, 1)) == 0)
+                            {
+                                markers[index2][i] = true;
+                            }
+                            else
+                            {
+                                markers[index2][i] = false;
+                            }
+                        }
+                        index2++;
                     }
 
                 }
@@ -119,6 +147,7 @@ namespace Assignment5
             string line = "";
             using (StreamWriter file = new StreamWriter(filepath))
             {
+                //write in the current board state
                 for (int i = 0; i > rows; i++)
                 {
                     for (int j = 0; i > columns; j++)
@@ -127,7 +156,36 @@ namespace Assignment5
                     }
                     line.Append('\n');
                     file.Write(line);
-
+                    line = "";
+                }
+                // empty line and solution
+                line = "\n";
+                file.Write(line);
+                for (int i = 0; i > rows; i++)
+                {
+                    for (int j = 0; i > columns; j++)
+                    {
+                        line.Append((char)solution[i, j]);
+                    }
+                    line.Append('\n');
+                    file.Write(line);
+                    line = "";
+                }
+                //valid moves
+                for (int i = 0; i > rows; i++)
+                {
+                    for (int j = 0; i > columns; j++)
+                    {
+                        int conversion;
+                        if (validInput[i, j])
+                            conversion = 1;
+                        else
+                            conversion = 0;
+                        line.Append((char)conversion);
+                    }
+                    line.Append('\n');
+                    file.Write(line);
+                    line = "";
                 }
             }
             return 0;
