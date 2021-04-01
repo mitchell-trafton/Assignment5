@@ -20,6 +20,14 @@ namespace Assignment5
 
         List<TextBox> numberBoxes = new List<TextBox>();//stores the various textboxes to be drawn to the form
 
+        List<Tuple<List<int>, int>> rowGroups = new List<Tuple<List<int>, int>>();//stores the indexes of the number boxes in each row along with their totals
+        List<Tuple<List<int>, int>> columnGroups = new List<Tuple<List<int>, int>>();//stores the indexes of the number boxes in each column along with their totals
+        List<Tuple<List<int>, Tuple<string, int>>> diagGroups = new List<Tuple<List<int>, Tuple<string, int>>>();//stores the indexes of the number boxes in each down-right (excluding one-long) diagonal row along with their totals
+
+        List<Label> rowTotals = new List<Label>();//labels storing totals for each row
+        List<Label> columnTotals = new List<Label>();//labels storing totals for each column
+        List<Label> diagTotals = new List<Label>();//labels storing totals for each down-right row
+
         public PuzzleForm(Form callingForm = null)
         {
             parentForm = callingForm;
@@ -43,7 +51,7 @@ namespace Assignment5
 
                 numberBoxes[numberBoxes.Count - 1].Name = i.ToString();
 
-                if (Globals.selectedPuzzle.ValidInput[(int)((numberBoxes.Count - 1) / Globals.selectedPuzzle.Columns), (numberBoxes.Count - 1) % Globals.selectedPuzzle.Columns])
+                if (!Globals.selectedPuzzle.ValidInput[(int)((numberBoxes.Count - 1) / Globals.selectedPuzzle.Columns), (numberBoxes.Count - 1) % Globals.selectedPuzzle.Columns])
                 {
                     numberBoxes[numberBoxes.Count - 1].Enabled = false;
                     numberBoxes[numberBoxes.Count - 1].Text =
@@ -59,18 +67,25 @@ namespace Assignment5
                     //make sure that the entered text is numeric between 1 and 9, erase text if otherwise
                     if (!(Char.IsNumber(sender_.Text[0]) && sender_.Text[0] != '0'))
                         sender_.Clear();
-                    //if input was numeric, send focus to next availible textbox if there is one
-                    else if (sender_.Name != numberBoxes.Count.ToString())
+                    //if input was numeric, update totals and send focus to next availible textbox if there is one
+                    else
                     {
-                        int nextIndex = Int32.Parse(sender_.Name);
-                        while (nextIndex >= numberBoxes.Count || numberBoxes[nextIndex].Enabled == false)
+                        UpdateRowTotal(Int32.Parse(sender_.Name) - 1);
+                        UpdateColumnTotal(Int32.Parse(sender_.Name) - 1);
+                        UpdateDiagTotal(Int32.Parse(sender_.Name) - 1);
+
+                        if (sender_.Name != numberBoxes.Count.ToString())
                         {
-                            if (nextIndex >= numberBoxes.Count) return;
+                            int nextIndex = Int32.Parse(sender_.Name);
+                            while (nextIndex >= numberBoxes.Count || numberBoxes[nextIndex].Enabled == false)
+                            {
+                                if (nextIndex >= numberBoxes.Count) return;
 
-                            nextIndex++;
+                                nextIndex++;
+                            }
+
+                            numberBoxes[nextIndex].Focus();
                         }
-
-                        numberBoxes[nextIndex].Focus();
                     }
                 };
             }
@@ -107,6 +122,7 @@ namespace Assignment5
 
 
             ///line up sums pannel and populate it
+            ///also, populate the row/column/diagonal groups
             sums_pnl.Location = new Point(sums_pnl.Location.X, numberBoxHolder.Height + 30);
 
             //populate row totals
@@ -114,20 +130,36 @@ namespace Assignment5
             {
                 int total = 0;
 
+                List<int> rowGroup = new List<int>();
+
                 for (int c = 0; c < Globals.selectedPuzzle.Columns; c++)
+                {
                     total += Globals.selectedPuzzle.Solution[r, c];
 
+                    rowGroup.Add((r * Globals.selectedPuzzle.Columns) + c);
+                }
+
                 rowsSums_lbl.Text += "R" + (r + 1).ToString() + " = " + total.ToString() + "\n";
+
+                rowGroups.Add(new Tuple<List<int>, int>(rowGroup, total));
             }
             //populate column totals
             for (int c = 0; c < Globals.selectedPuzzle.Columns; c++)
             {
                 int total = 0;
 
+                List<int> columnGroup = new List<int>();
+
                 for (int r = 0; r < Globals.selectedPuzzle.Rows; r++)
+                {
                     total += Globals.selectedPuzzle.Solution[r, c];
 
+                    columnGroup.Add((r * Globals.selectedPuzzle.Columns) + c);
+                }
+                    
                 columnsSums_lbl.Text += "C" + (c + 1).ToString() + " = " + total.ToString() + "\n";
+
+                columnGroups.Add(new Tuple<List<int>, int>(columnGroup, total));
             }
             //populate diagonal totals
             for (int r = Globals.selectedPuzzle.Rows - 2; r >= 0; r--)
@@ -136,14 +168,21 @@ namespace Assignment5
                 int c = 0;
                 int final_r = 0;
 
+                List<int> diagGroup = new List<int>();
+
                 for (int rr = r; rr < Globals.selectedPuzzle.Rows; rr++)
                 {
                     total += Globals.selectedPuzzle.Solution[rr, c];
-                    c++;
                     final_r = rr + 1;
+
+                    diagGroup.Add((rr * Globals.selectedPuzzle.Columns) + c);
+                    c++;
                 }
 
                 diagonalsSums_lbl.Text += "(C1,R" + (r + 1).ToString() + ") -> (C" + c.ToString() + ",R" + final_r.ToString() + ") = " + total.ToString() + "\n";
+
+                Tuple<string, int> infoTuple = new Tuple<string, int>("(C1,R" + (r + 1).ToString() + ") -> (C" + c.ToString() + ",R" + final_r.ToString() + ") = ", total);
+                diagGroups.Add(new Tuple<List<int>, Tuple<string, int>>(diagGroup, infoTuple));
             }
             for (int c = 1; c < Globals.selectedPuzzle.Columns - 1; c++)
             {
@@ -151,14 +190,168 @@ namespace Assignment5
                 int r = 0;
                 int final_c = 0;
 
+                List<int> diagGroup = new List<int>();
+
                 for (int cc = c; cc < Globals.selectedPuzzle.Columns; cc++)
                 {
                     total += Globals.selectedPuzzle.Solution[r, cc];
-                    r++;
                     final_c = cc + 1;
+
+                    diagGroup.Add((r * Globals.selectedPuzzle.Columns) + cc);
+                    r++;
                 }
 
                 diagonalsSums_lbl.Text += "(C" + (c + 1).ToString() + ",R1) -> (C" + final_c.ToString() + ",R" + r.ToString() + ") = " + total.ToString() + "\n";
+
+                Tuple<string, int> infoTuple = new Tuple<string, int>("(C" + (c + 1).ToString() + ",R1) -> (C" + final_c.ToString() + ",R" + r.ToString() + ") = ", total);
+                diagGroups.Add(new Tuple<List<int>, Tuple<string, int>>(diagGroup, infoTuple));
+            }
+
+            ///build the actual_sums panel
+            actualSums_pnl.Location = new Point(actualSums_pnl.Location.X, numberBoxHolder.Height + 30);
+
+            int currentY = 59; //current y coordinate of labels being added
+            int currentX = 9; //current x coordinate of labels being added
+            //build row sums
+            foreach (Tuple<List<int>, int> r in rowGroups)
+            {
+                rowTotals.Add(new Label());
+                rowTotals[rowTotals.Count - 1].Location = new Point(currentX, currentY);
+                rowTotals[rowTotals.Count - 1].Name = "R" + rowTotals.Count.ToString();
+                rowTotals[rowTotals.Count - 1].AutoSize = true;
+
+                actualSums_pnl.Controls.Add(rowTotals[rowTotals.Count - 1]);
+
+                currentY += 20;
+
+                UpdateRowTotal(r.Item1[0]);
+            }
+            //build column sums
+            currentY = 60;
+            currentX = 78;
+            foreach (Tuple<List<int>, int> c in columnGroups)
+            {
+                columnTotals.Add(new Label());
+                columnTotals[columnTotals.Count - 1].Location = new Point(currentX, currentY);
+                columnTotals[columnTotals.Count - 1].Name = "C" + columnTotals.Count.ToString();
+                columnTotals[columnTotals.Count - 1].AutoSize = true;
+
+                actualSums_pnl.Controls.Add(columnTotals[columnTotals.Count - 1]);
+
+                currentY += 20;
+
+                UpdateColumnTotal(c.Item1[0]);
+            }
+            //build diagonal sums
+            currentY = 60;
+            currentX = 174;
+            foreach (Tuple<List<int>, Tuple<string, int>> d in diagGroups)
+            {
+                diagTotals.Add(new Label());
+                diagTotals[diagTotals.Count - 1].Location = new Point(currentX, currentY);
+                diagTotals[diagTotals.Count - 1].Name = "D" + diagTotals.Count.ToString();
+                diagTotals[diagTotals.Count - 1].AutoSize = true;
+
+                actualSums_pnl.Controls.Add(diagTotals[diagTotals.Count - 1]);
+
+                currentY += 20;
+
+                UpdateDiagTotal(d.Item1[0]);
+            }
+        }
+
+        private void UpdateRowTotal(int idx)
+        {
+            int groupIdx = 0;
+
+            foreach (Tuple<List<int>, int> r in rowGroups)
+            {
+                if (r.Item1.Contains(idx))
+                {
+                    int total = 0;
+                    int expectedTotal = 0;
+
+                    for (int i = 0; i < Globals.selectedPuzzle.Columns; i++)
+                    {
+                        expectedTotal += Globals.selectedPuzzle.Solution[groupIdx, i];
+                    }
+
+                    foreach(int i in r.Item1)
+                    {
+                        if (numberBoxes[i].Text != "") total += Int32.Parse(numberBoxes[i].Text);
+                    }
+
+                    rowTotals[groupIdx].Text = "R" + (groupIdx + 1).ToString() + " = " + total;
+
+                    if (total < expectedTotal) rowTotals[groupIdx].ForeColor = Color.Black;
+                    else if (total == expectedTotal) rowTotals[groupIdx].ForeColor = Color.Green;
+                    else rowTotals[groupIdx].ForeColor = Color.Red;
+
+                    return;
+                }
+                groupIdx++;
+            }
+        }
+
+        private void UpdateColumnTotal(int idx)
+        {
+            int groupIdx = 0;
+
+            foreach (Tuple<List<int>, int> c in columnGroups)
+            {
+                if (c.Item1.Contains(idx))
+                {
+                    int total = 0;
+                    int expectedTotal = 0;
+
+                    for (int i = 0; i < Globals.selectedPuzzle.Rows; i++)
+                    {
+                        expectedTotal += Globals.selectedPuzzle.Solution[i, groupIdx];
+                    }
+
+                    foreach (int i in c.Item1)
+                    {
+                        if (numberBoxes[i].Text != "") total += Int32.Parse(numberBoxes[i].Text);
+                    }
+
+                    columnTotals[groupIdx].Text = "C" + (groupIdx + 1).ToString() + " = " + total;
+
+                    if (total < expectedTotal) columnTotals[groupIdx].ForeColor = Color.Black;
+                    else if (total == expectedTotal) columnTotals[groupIdx].ForeColor = Color.Green;
+                    else columnTotals[groupIdx].ForeColor = Color.Red;
+
+                    return;
+                }
+                groupIdx++;
+            }
+        }
+
+        private void UpdateDiagTotal(int idx)
+        {
+            int groupIdx = 0;
+
+            foreach (Tuple<List<int>, Tuple<string, int>> d in diagGroups)
+            {
+                if (d.Item1.Contains(idx))
+                {
+                    int total = 0;
+                    int expectedTotal = 0;
+
+                    foreach (int i in d.Item1)
+                    {
+                        if (numberBoxes[i].Text != "") total += Int32.Parse(numberBoxes[i].Text);
+                        expectedTotal += Globals.selectedPuzzle.Solution[(int)(i / Globals.selectedPuzzle.Rows), (i % Globals.selectedPuzzle.Rows)];
+                    }
+
+                    diagTotals[groupIdx].Text = d.Item2.Item1 + total;
+
+                    if (total < expectedTotal) diagTotals[groupIdx].ForeColor = Color.Black;
+                    else if (total == expectedTotal) diagTotals[groupIdx].ForeColor = Color.Green;
+                    else diagTotals[groupIdx].ForeColor = Color.Red;
+
+                    return;
+                }
+                groupIdx++;
             }
         }
 
