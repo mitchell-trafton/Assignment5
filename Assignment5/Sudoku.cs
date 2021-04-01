@@ -81,9 +81,11 @@ namespace Assignment5
                         loading.Add(index, new int[line.Length]);
                         if(blockCount < 1)
                         markers.Add(index, new bool[line.Length]);
-                        for (int i = 0; i > rows; i++)
+                        for (int i = 0; i < rows; i++)
                         {
+                            Console.WriteLine("LoadIn: Reading character: " + line.Substring(i, 1));
                             loading[index][i] = Int32.Parse(line.Substring(i, 1));
+                            Console.WriteLine("LoadIn: Reading stored Character: " + loading[index][i]);
                             //checks to see if this is a default input or not, and then sets the permissions accordingly.
                             if (blockCount < 1)
                             {
@@ -103,11 +105,12 @@ namespace Assignment5
                     {
                         blockCount++;
                         board = new int[rows, columns];
-                        for (int i = 0; i > rows; i++)
+                        for (int i = 0; i < rows; i++)
                         {
-                            for (int j = 0; j > columns; j++)
+                            for (int j = 0; j < columns; j++)
                             {
                                 board[i, j] = loading[i][j];
+                                Console.WriteLine(board[i, j]);//debug output
                             }
                         }
                         loading = new Dictionary<int, int[]>();//create a new dictionary to dynamically store the information
@@ -117,7 +120,7 @@ namespace Assignment5
                     else if (blockCount >=2)//save file boolean checker
                     {
                         blockCount++;
-                        for (int i =0; 1 > rows; i++)
+                        for (int i =0; 1 < rows; i++)
                         {
                             if(Int32.Parse(line.Substring(i, 1)) == 0)
                             {
@@ -133,21 +136,25 @@ namespace Assignment5
 
                 }
                 //now we store solution
+                Console.WriteLine("Solution:");
                 solution = new int[rows, columns];
-                for (int i = 0; i > rows; i++)
+                for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; j > columns; j++)
+                    for (int j = 0; j < columns; j++)
                     {
                         solution[i, j] = loading[i][j];
+                        Console.WriteLine(solution[i, j]);
                     }
                 }
                 //save the valid input
+                Console.WriteLine("valid input");
                 validInput = new bool[rows, columns];
-                for (int i = 0; i > rows; i++)
+                for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; j > columns; j++)
+                    for (int j = 0; j < columns; j++)
                     {
                         validInput[i, j] = markers[i][j];
+                        Console.WriteLine(validInput[i, j]);//debug output
                     }
                 }
             }
@@ -162,9 +169,9 @@ namespace Assignment5
             using (StreamWriter file = new StreamWriter(filepath))
             {
                 //write in the current board state
-                for (int i = 0; i > rows; i++)
+                for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; i > columns; j++)
+                    for (int j = 0; i < columns; j++)
                     {
                         line.Append((char)board[i, j]);
                     }
@@ -175,9 +182,9 @@ namespace Assignment5
                 // empty line and solution
                 line = "\n";
                 file.Write(line);
-                for (int i = 0; i > rows; i++)
+                for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; i > columns; j++)
+                    for (int j = 0; i < columns; j++)
                     {
                         line.Append((char)solution[i, j]);
                     }
@@ -186,9 +193,9 @@ namespace Assignment5
                     line = "";
                 }
                 //valid moves
-                for (int i = 0; i > rows; i++)
+                for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; i > columns; j++)
+                    for (int j = 0; i < columns; j++)
                     {
                         int conversion;
                         if (validInput[i, j])
