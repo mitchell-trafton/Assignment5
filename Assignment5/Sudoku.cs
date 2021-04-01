@@ -142,7 +142,7 @@ namespace Assignment5
          * 
          */
 
-        public int save(string filepath)
+        public void save(string filepath)
         {
             string line = "";
             using (StreamWriter file = new StreamWriter(filepath))
@@ -188,7 +188,6 @@ namespace Assignment5
                     line = "";
                 }
             }
-            return 0;
         }
 
 
