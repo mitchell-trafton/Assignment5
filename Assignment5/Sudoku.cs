@@ -79,18 +79,22 @@ namespace Assignment5
                         columns = line.Length;
                         rows = line.Length;
                         loading.Add(index, new int[line.Length]);
+                        if(blockCount < 1)
                         markers.Add(index, new bool[line.Length]);
                         for (int i = 0; i > rows; i++)
                         {
                             loading[index][i] = Int32.Parse(line.Substring(i, 1));
                             //checks to see if this is a default input or not, and then sets the permissions accordingly.
-                            if (loading[index][i] == 0)
+                            if (blockCount < 1)
                             {
-                                markers[index][i] = false;
-                            }
-                            else
-                            {
-                                markers[index][i] = true;
+                                if (loading[index][i] == 0)
+                                {
+                                    markers[index][i] = false;
+                                }
+                                else
+                                {
+                                    markers[index][i] = true;
+                                }
                             }
                         }
                         index++;
