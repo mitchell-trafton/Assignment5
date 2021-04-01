@@ -112,11 +112,20 @@ namespace Assignment5
             Random rand = new Random(System.DateTime.Now.Millisecond);
 
             Globals.selectedPuzzleLoc = puzzleSelections[rand.Next() % puzzleSelections.Count];
+
+            LaunchPuzzle();
         }
+
+        private void playSpecific_btn_Click(object sender, EventArgs e) { LaunchPuzzle(); }
+        private void playResume_btn_Click(object sender, EventArgs e) { LaunchPuzzle(); }
 
         private void LaunchPuzzle()
         {
-            Globals.selectedPuzzle = new 
+            Globals.selectedPuzzle = new Sudoku(Globals.selectedPuzzleLoc);
+
+            PuzzleForm pz = new PuzzleForm(this);
+            pz.Show();
+            this.Hide();
         }
 
         private void button2_Click(object sender, EventArgs e)

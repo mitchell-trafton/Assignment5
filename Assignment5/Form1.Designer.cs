@@ -181,6 +181,7 @@ namespace Assignment5
             this.playSpecific_btn.TabIndex = 4;
             this.playSpecific_btn.Text = "Play!";
             this.playSpecific_btn.UseVisualStyleBackColor = true;
+            this.playSpecific_btn.Click += new System.EventHandler(this.playSpecific_btn_Click);
             // 
             // specificDifficulty_lbl
             // 
@@ -233,6 +234,7 @@ namespace Assignment5
             this.playResume_btn.TabIndex = 5;
             this.playResume_btn.Text = "Play!";
             this.playResume_btn.UseVisualStyleBackColor = true;
+            this.playResume_btn.Click += new System.EventHandler(this.playResume_btn_Click);
             // 
             // resumeSelect_lbx
             // 
