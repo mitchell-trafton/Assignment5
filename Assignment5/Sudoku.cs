@@ -87,7 +87,7 @@ namespace Assignment5
                             //checks to see if this is a default input or not, and then sets the permissions accordingly.
                             if (blockCount < 1)
                             {
-                                if (loading[index][i] == 0)
+                                if (loading[index][i] != 0)
                                 {
                                     markers[index][i] = false;
                                 }
