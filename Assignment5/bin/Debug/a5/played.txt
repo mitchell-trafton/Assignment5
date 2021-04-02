@@ -1,0 +1,9 @@
+easy/e3.txt
+hard/h3.txt
+hard/h3.txt
+hard/h3.txt
+hard/h3.txt
+hard/h3.txt
+hard/h1.txt
+hard/h1.txt
+hard/h3.txt

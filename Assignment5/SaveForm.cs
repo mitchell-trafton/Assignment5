@@ -22,7 +22,7 @@ namespace Assignment5
             if (!Globals.save_puzzle(savename_txt.Text))
                 MessageBox.Show("A save already exists with this name. Please enter a different name.", "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             
-            else Close();
+            else Application.Exit();
         }
     }
 }

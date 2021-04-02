@@ -37,6 +37,11 @@ namespace Assignment5
             parentForm = callingForm;
             InitializeComponent();
 
+            ///add puzzle to list of played puzzles
+            using (StreamWriter playedFile = File.AppendText(@"./a5/played.txt"))
+                playedFile.WriteLine(Globals.savePath.Split('5')[1].Remove(0,1));
+
+
             ////build the puzzle
 
             //adjust size of numberBoxHolder
@@ -55,13 +60,19 @@ namespace Assignment5
 
                 numberBoxes[numberBoxes.Count - 1].Name = i.ToString();
 
-                if (!Globals.selectedPuzzle.ValidInput[(int)((numberBoxes.Count - 1) / Globals.selectedPuzzle.Columns), (numberBoxes.Count - 1) % Globals.selectedPuzzle.Columns])
+                if (Globals.selectedPuzzle[(int)((numberBoxes.Count - 1) / Globals.selectedPuzzle.Columns), (numberBoxes.Count - 1) % Globals.selectedPuzzle.Columns] != 0)
                 {
-                    numberBoxes[numberBoxes.Count - 1].Enabled = false;
                     numberBoxes[numberBoxes.Count - 1].Text =
                         Globals.selectedPuzzle.Solution[(int)((numberBoxes.Count - 1) / Globals.selectedPuzzle.Columns), (numberBoxes.Count - 1) % Globals.selectedPuzzle.Columns].ToString();
                 }
-                    
+                else
+                    numberBoxes[numberBoxes.Count - 1].Text = "";
+
+                if (!Globals.selectedPuzzle.ValidInput[(int)((numberBoxes.Count - 1) / Globals.selectedPuzzle.Columns), (numberBoxes.Count - 1) % Globals.selectedPuzzle.Columns])
+                {
+                    numberBoxes[numberBoxes.Count - 1].Enabled = false;
+                }
+
 
                 numberBoxes[numberBoxes.Count - 1].TextChanged += (sender, e) =>//TextChanged event
                 {

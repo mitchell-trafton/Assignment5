@@ -1,1 +1,1 @@
-k_f.txt ./a5/medium/m2.txt
+hardone.txt ./a5/hard/h3.txt
