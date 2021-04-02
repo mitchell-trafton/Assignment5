@@ -84,10 +84,11 @@ namespace Assignment5
             {
                 string line;
                 int index = 0;
-                int index2 = 0;
+                int index2 = 0;// used for loading the valid input
                 int blockCount = 0; //used for counting the blocks of data read and controlling storage, initial puzzles will have 2, save files will have 3
                 Dictionary<int, int[]> loading = new Dictionary<int, int[]>(); //used for extracting the problem and solution grids
                 Dictionary<int, bool[]> markers = new Dictionary<int, bool[]>(); // used for labeling the valid changing values for user
+                bool loadFromSave = true; // a flag used to determine if we're loading from a save or not
                 while ((line = file.ReadLine()) != null)
                 {
                     if (line.Length != 0 && blockCount < 2)//detect the blank line that seperates problem and solution
@@ -132,29 +133,41 @@ namespace Assignment5
                         index = 0;
 
                     }
-                    else if (line.Length == 0 && blockCount >=2)
-                    {
-                        if((line = file.ReadLine()) != null)
-                        {
-                            int t = Int32.Parse(line); //converts the timespan to an int to load
-                            ts = new TimeSpan(t);//load the timespan from the save, to be used to create the timer
-                        }
-                    }
-                    else if (blockCount >=2)//save file boolean checker
+                    else if (line.Length == 0 && blockCount < 2)
                     {
                         blockCount++;
-                        for (int i =0; 1 < rows; i++)
+                    }
+                    else if (blockCount >= 2)//save file boolean checker
+                    {
+
+                        if (line.Length == 0)//look for the third line break for the timer.
                         {
-                            if(Int32.Parse(line.Substring(i, 1)) == 0)
-                            {
-                                markers[index2][i] = true;
-                            }
-                            else
-                            {
-                                markers[index2][i] = false;
-                            }
+                            line = file.ReadLine();
+                            Time = new TimeSpan(Int64.Parse(line));
                         }
-                        index2++;
+                        else
+                        {
+                            if(loadFromSave)
+                            {
+                                markers = new Dictionary<int, bool[]>();
+                            }
+                            loadFromSave = false;
+                            blockCount++;
+                            Console.WriteLine("valid: " + line);
+                            markers.Add(index2, new bool[line.Length]);
+                            for (int i = 0; i < rows; i++)
+                            {
+                                if (Int32.Parse(line.Substring(i, 1)) == 0)
+                                {
+                                    markers[index2][i] = true;
+                                }
+                                else
+                                {
+                                    markers[index2][i] = false;
+                                }
+                            }
+                            index2++;
+                        }
                     }
 
                 }
@@ -198,46 +211,52 @@ namespace Assignment5
                 {
                     for (int j = 0; j < columns; j++)
                     {
-                        line.Append((char)board[i, j]);
+                        line = line + board[i, j].ToString();
                     }
-                    line.Append('\n');
+                    line = line + "\n";
                     file.Write(line);
                     line = "";
                 }
                 // empty line and solution
                 line = "\n";
                 file.Write(line);
+                line = "";
                 for (int i = 0; i < rows; i++)
                 {
                     for (int j = 0; j < columns; j++)
                     {
-                        line.Append((char)solution[i, j]);
+                        line = line + solution[i, j].ToString();
                     }
-                    line.Append('\n');
+                    line = line + "\n";
                     file.Write(line);
                     line = "";
                 }
                 //valid moves
                 line = "\n";
                 file.Write(line);
-                for (int i = 0; i < rows; i++)
+                line = "";
+                for (int a = 0; a < rows; a++)
                 {
-                    for (int j = 0; j < columns; j++)
+                    for (int b = 0; b < columns; b++)
                     {
                         int conversion;
-                        if (validInput[i, j])
+                        if (validInput[a, b])
+                        {
                             conversion = 1;
+                        }
                         else
+                        {
                             conversion = 0;
-                        line.Append((char)conversion);
+                        }
+                        line = line + conversion;
                     }
-                    line.Append('\n');
+                    line = line + "\n";
                     file.Write(line);
                     line = "";
-                    line = "\n";
-                    file.Write(line);
-                    file.Write(ts.Ticks); // writes the amount of ticks in the clock
                 }
+                line = "\n";
+                file.Write(line);
+                file.Write(ts.Ticks); // writes the amount of ticks in the clock
             }
         }
 
