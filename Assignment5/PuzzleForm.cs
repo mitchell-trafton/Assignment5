@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -270,6 +271,7 @@ namespace Assignment5
 
 
             ///start timer
+            timer.Time = Globals.selectedPuzzle.Time;
             timer.Start();
         }
 
@@ -474,13 +476,138 @@ namespace Assignment5
                     t.BackColor = Color.Green;
                 }
 
+                int avgTime;//average time for puzzles in current difficulty (seconds)
+                int bestTime;//best time in current difficulty (seconds)
+                int currentTime; //current time (in seconds)
 
-                MessageBox.Show("Congratulations! You completed the puzzle!\n\nYour time: " + timer.getTime(), "Congratulations!");
+                TimeSpan avgTimeTS;//average time in timestamp form
+                TimeSpan bestTimeTS;//best time in timestamp form
+
+                string winMessage = "Congratulations! You completed the puzzle!\n\nYour time: ";
+
+                //determine which high score file to open
+                if (Globals.savePath.Split('/')[2] == "easy")//easy
+                {
+                    StreamReader hsFile = new StreamReader(@"./a5/high_scores_easy.txt");
+
+                    bestTime = Int32.Parse(hsFile.ReadLine());
+                    avgTime = Int32.Parse(hsFile.ReadLine());
+                    currentTime = (int)timer.Time.TotalSeconds;
+
+                    if (avgTime == 0) avgTime = currentTime;//set average time to current time if no average time is on file yet
+
+                    hsFile.Close();
+
+                    bestTimeTS = TimeSpan.FromSeconds(bestTime);
+
+                    if (timer.Time > bestTimeTS) bestTimeTS = timer.Time;
+
+
+                    avgTime = (int)((avgTime + currentTime) / 2);
+
+                    avgTimeTS = TimeSpan.FromSeconds(avgTime);
+
+                    winMessage += timer.getTime() + "\n";
+                    winMessage += "Best time (easy): " + bestTimeTS.Hours.ToString() + ":" + bestTimeTS.Minutes.ToString() + ":" + bestTimeTS.Seconds.ToString() + "\n";
+                    winMessage += "Average time (easy): " + avgTimeTS.Hours.ToString() + ":" + avgTimeTS.Minutes.ToString() + ":" + avgTimeTS.Seconds.ToString();
+
+                    using (File.Create(@"./a5/hs_tmp.txt")) { }//create temporary file for rewriting save file
+
+                    bestTime = (int)bestTimeTS.TotalSeconds;
+
+                    StreamWriter sw = new StreamWriter(@"./a5/hs_tmp.txt");
+                    sw.WriteLine(bestTime);
+                    sw.WriteLine(avgTime);
+                    sw.Close();
+
+                    File.Copy(@"./a5/hs_tmp.txt", "./a5/high_scores_easy.txt", true);//copy temporary hs file to perminant high score file
+                    File.Delete(@"./a5/hs_tmp.txt");//delete temporary file
+                }
+                else if (Globals.savePath.Split('/')[2] == "medium")//medium
+                {
+                    StreamReader hsFile = new StreamReader(@"./a5/high_scores_medium.txt");
+
+                    bestTime = Int32.Parse(hsFile.ReadLine());
+                    avgTime = Int32.Parse(hsFile.ReadLine());
+                    currentTime = (int)timer.Time.TotalSeconds;
+
+                    if (avgTime == 0) avgTime = currentTime;//set average time to current time if no average time is on file yet
+
+                    hsFile.Close();
+
+                    bestTimeTS = TimeSpan.FromSeconds(bestTime);
+
+                    if (timer.Time > bestTimeTS) bestTimeTS = timer.Time;
+
+
+                    avgTime = (int)((avgTime + currentTime) / 2);
+
+                    avgTimeTS = TimeSpan.FromSeconds(avgTime);
+
+                    winMessage += timer.getTime() + "\n";
+                    winMessage += "Best time (medium): " + bestTimeTS.Hours.ToString() + ":" + bestTimeTS.Minutes.ToString() + ":" + bestTimeTS.Seconds.ToString() + "\n";
+                    winMessage += "Average time (medium): " + avgTimeTS.Hours.ToString() + ":" + avgTimeTS.Minutes.ToString() + ":" + avgTimeTS.Seconds.ToString();
+
+                    using (File.Create(@"./a5/hs_tmp.txt")) { }//create temporary file for rewriting save file
+
+                    bestTime = (int)bestTimeTS.TotalSeconds;
+
+                    StreamWriter sw = new StreamWriter(@"./a5/hs_tmp.txt");
+                    sw.WriteLine(bestTime);
+                    sw.WriteLine(avgTime);
+                    sw.Close();
+
+                    File.Copy(@"./a5/hs_tmp.txt", "./a5/high_scores_medium.txt", true);//copy temporary hs file to perminant high score file
+                    File.Delete(@"./a5/hs_tmp.txt");//delete temporary file
+                }
+                else if (Globals.savePath.Split('/')[2] == "hard")//hard
+                {
+                    StreamReader hsFile = new StreamReader(@"./a5/high_scores_hard.txt");
+
+                    bestTime = Int32.Parse(hsFile.ReadLine());
+                    avgTime = Int32.Parse(hsFile.ReadLine());
+                    currentTime = (int)timer.Time.TotalSeconds;
+
+                    if (avgTime == 0) avgTime = currentTime;//set average time to current time if no average time is on file yet
+
+                    hsFile.Close();
+
+                    bestTimeTS = TimeSpan.FromSeconds(bestTime);
+
+                    if (timer.Time > bestTimeTS) bestTimeTS = timer.Time;
+
+
+                    avgTime = (int)((avgTime + currentTime) / 2);
+
+                    avgTimeTS = TimeSpan.FromSeconds(avgTime);
+
+                    winMessage += timer.getTime() + "\n";
+                    winMessage += "Best time (hard): " + bestTimeTS.Hours.ToString() + ":" + bestTimeTS.Minutes.ToString() + ":" + bestTimeTS.Seconds.ToString() + "\n";
+                    winMessage += "Average time (hard): " + avgTimeTS.Hours.ToString() + ":" + avgTimeTS.Minutes.ToString() + ":" + avgTimeTS.Seconds.ToString();
+
+                    using (File.Create(@"./a5/hs_tmp.txt")) { }//create temporary file for rewriting save file
+
+                    bestTime = (int)bestTimeTS.TotalSeconds;
+
+                    StreamWriter sw = new StreamWriter(@"./a5/hs_tmp.txt");
+                    sw.WriteLine(bestTime);
+                    sw.WriteLine(avgTime);
+                    sw.Close();
+
+                    File.Copy(@"./a5/hs_tmp.txt", "./a5/high_scores_hard.txt", true);//copy temporary hs file to perminant high score file
+                    File.Delete(@"./a5/hs_tmp.txt");//delete temporary file
+                }
+
+
+                MessageBox.Show(winMessage, "Congratulations!");
             }
         }
 
         private void save_btn_Click(object sender, EventArgs e)
         {
+            timer.Pause();
+            Globals.selectedPuzzle.Time = timer.Time;
+            
             foreach (TextBox t in numberBoxes)
             {
                 int idx = Int32.Parse(t.Name) - 1;

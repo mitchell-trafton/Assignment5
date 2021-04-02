@@ -60,7 +60,7 @@ namespace Assignment5
             {
                 puzzleSelections.Add("./Saves/" + save);
 
-                resumeSelect_lbx.Items.Add(save.Split('.')[0]);
+                resumeSelect_lbx.Items.Add(save.Split(' ')[0].Split('.')[0]);
             }
         }
 
@@ -73,14 +73,16 @@ namespace Assignment5
         {
             playSpecific_btn.Enabled = true;
 
-            Globals.selectedPuzzleLoc = puzzleSelections[puzzleSelect_lbx.SelectedIndex];
+            Globals.selectedPuzzleLoc = puzzleSelections[puzzleSelect_lbx.SelectedIndex].Split(' ')[0];
+            Globals.savePath = puzzleSelections[puzzleSelect_lbx.SelectedIndex].Split(' ')[1];
         }
 
         private void resumeSelect_lbx_SelectedIndexChanged(object sender, EventArgs e)
         {
             playResume_btn.Enabled = true;
 
-            Globals.selectedPuzzleLoc = puzzleSelections[resumeSelect_lbx.SelectedIndex];
+            Globals.selectedPuzzleLoc = puzzleSelections[resumeSelect_lbx.SelectedIndex].Split(' ')[0];
+            Globals.savePath = puzzleSelections[resumeSelect_lbx.SelectedIndex].Split(' ')[1]; ;
         }
 
         private void specificDifficulty_cbx_SelectedIndexChanged(object sender, EventArgs e)
@@ -90,9 +92,9 @@ namespace Assignment5
             
             foreach (string puzzle in Globals.get_availible_puzzles(specificDifficulty_cbx.SelectedItem.ToString()))
             {
-                puzzleSelections.Add("./a5/" + puzzle);
+                puzzleSelections.Add("./a5/" + puzzle + " ./a5/" + puzzle);
 
-                puzzleSelect_lbx.Items.Add(puzzle.Split('/')[1].Split('.')[0]);
+                puzzleSelect_lbx.Items.Add(puzzle.Split(' ')[0].Split('/')[1].Split('.')[0]);
             }
         }
 
@@ -107,11 +109,13 @@ namespace Assignment5
 
             puzzleSelections.Clear();
             foreach (string puzzle in Globals.get_availible_puzzles(randomDifficulty_cbx.SelectedItem.ToString(), newPuzzle_ckbx.Checked))
-                puzzleSelections.Add("./a5/" + puzzle);
+                puzzleSelections.Add("./a5/" + puzzle + " ./a5/" + puzzle);
 
             Random rand = new Random(System.DateTime.Now.Millisecond);
+            int r = rand.Next();
 
-            Globals.selectedPuzzleLoc = puzzleSelections[rand.Next() % puzzleSelections.Count];
+            Globals.selectedPuzzleLoc = puzzleSelections[r % puzzleSelections.Count].Split(' ')[0];
+            Globals.savePath = puzzleSelections[r % puzzleSelections.Count].Split(' ')[1];
 
             LaunchPuzzle();
         }

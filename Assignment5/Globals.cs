@@ -11,6 +11,7 @@ namespace Assignment5
     {
         public static string selectedPuzzleLoc;//path to selected puzzle
         public static Sudoku selectedPuzzle = new Sudoku();//Sudoku object for puzzle being played
+        public static string savePath = null;//original puzzle filepath (will be the same as selectedPuzzleLoc if puzzle is not resumed from a save)
 
         public static List<string> get_availible_puzzles(string difficulty = null, bool unused = false)
         {
@@ -59,6 +60,8 @@ namespace Assignment5
 
         public static bool save_puzzle(string name)
         {
+            name = name.Replace(' ', '_');//replace spaces in name with underlines
+
             StreamReader directoryInput = new StreamReader(@"./Saves/directory.txt");
             string linein;
             while ((linein = directoryInput.ReadLine()) != null)
@@ -71,7 +74,7 @@ namespace Assignment5
 
 
             selectedPuzzle.save("./Saves/"+name+".txt");
-            File.AppendAllText("./Saves/directory.txt", (name + ".txt") + Environment.NewLine);
+            File.AppendAllText("./Saves/directory.txt", (name + ".txt") + " " + savePath + Environment.NewLine);
 
             return true;
         }
