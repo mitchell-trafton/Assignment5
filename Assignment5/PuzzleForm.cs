@@ -28,6 +28,9 @@ namespace Assignment5
         List<Label> columnTotals = new List<Label>();//labels storing totals for each column
         List<Label> diagTotals = new List<Label>();//labels storing totals for each down-right row
 
+        Clock timer = new Clock();//timer for game
+        bool paused = false; //true when the timer is paused
+
         public PuzzleForm(Form callingForm = null)
         {
             parentForm = callingForm;
@@ -73,6 +76,9 @@ namespace Assignment5
                         UpdateRowTotal(Int32.Parse(sender_.Name) - 1);
                         UpdateColumnTotal(Int32.Parse(sender_.Name) - 1);
                         UpdateDiagTotal(Int32.Parse(sender_.Name) - 1);
+
+                        //check if user has entered all the numbers correctly (win condition)
+                        CheckIfWon();
 
                         if (sender_.Name != numberBoxes.Count.ToString())
                         {
@@ -258,6 +264,13 @@ namespace Assignment5
 
                 UpdateDiagTotal(d.Item1[0]);
             }
+
+            ///align options_pnl
+            options_pnl.Location = new Point(numberBoxHolder.Size.Width + 30, options_pnl.Location.Y);
+
+
+            ///start timer
+            timer.Start();
         }
 
         private void UpdateRowTotal(int idx)
@@ -360,6 +373,124 @@ namespace Assignment5
             if (parentForm != null) parentForm.Close();
         }
 
-        
+        private void progress_btn_Click(object sender, EventArgs e)
+        {
+            bool allGood = true; //true if all filled in boxes are correct
+
+            foreach (TextBox t in numberBoxes)
+            {
+                int idx = Int32.Parse(t.Name) - 1;
+
+                if (t.Enabled && t.Text != "")
+                    if (Int32.Parse(t.Text) != Globals.selectedPuzzle.Solution[(int)(idx / Globals.selectedPuzzle.Rows), (idx % Globals.selectedPuzzle.Rows)])
+                    {
+                        t.BackColor = Color.Salmon;
+                        allGood = false;
+                    }
+                    else t.BackColor = Color.White;
+                else t.BackColor = Color.White;
+            }
+
+            if (!allGood)
+            {
+                progress_lbl.Text = "I see some mistakes!";
+                progress_lbl.ForeColor = Color.Red;
+            }
+            else
+            {
+                progress_lbl.Text = "All good so far!";
+                progress_lbl.ForeColor = Color.Green;
+            }
+        }
+
+        private void playPause_btn_Click(object sender, EventArgs e)
+        {
+            if (!paused)
+            {
+                paused = true;
+
+                foreach (Control c in numberBoxHolder.Controls)
+                    c.Visible = false;
+
+                timer.Pause();
+
+                playPause_btn.Text = "Play ▶️";
+            }
+            else
+            {
+                paused = false;
+
+                foreach (Control c in numberBoxHolder.Controls)
+                    c.Visible = true;
+
+                timer.Start();
+
+                playPause_btn.Text = "Pause ⏸️";
+            }
+        }
+
+        private void reset_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult confirmation = MessageBox.Show("Are you sure you want to reset? All your progress will be permanently deleted.", "", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (confirmation == DialogResult.Yes)
+            {
+                foreach (TextBox t in numberBoxes)
+                {
+                    if (t.Enabled) t.Text = "";
+                    t.BackColor = Color.White;
+
+                    UpdateRowTotal(Int32.Parse(t.Name) - 1);
+                    UpdateColumnTotal(Int32.Parse(t.Name) - 1);
+                    UpdateDiagTotal(Int32.Parse(t.Name) - 1);
+                }
+
+                timer.Stop();
+                timer.Start();
+            }
+        }
+
+        private void CheckIfWon()
+        {
+            bool won = true;//true if use has won the game
+
+            foreach (TextBox t in numberBoxes)
+            {
+                if (t.Text == "") return;//return function if any text box is blank (puzzle incomplete)
+
+                int idx = Int32.Parse(t.Name) - 1;
+
+                if (Int32.Parse(t.Text) != Globals.selectedPuzzle.Solution[(int)(idx / Globals.selectedPuzzle.Rows), (idx % Globals.selectedPuzzle.Rows)])
+                    won = false;
+            }
+            
+            if (won)
+            {
+                timer.Pause();
+
+                foreach (TextBox t in numberBoxes)
+                {   
+                    t.Enabled = false;
+                    t.BackColor = Color.Green;
+                }
+
+
+                MessageBox.Show("Congratulations! You completed the puzzle!\n\nYour time: " + timer.getTime(), "Congratulations!");
+            }
+        }
+
+        private void save_btn_Click(object sender, EventArgs e)
+        {
+            foreach (TextBox t in numberBoxes)
+            {
+                int idx = Int32.Parse(t.Name) - 1;
+
+                if (t.Text != "") Globals.selectedPuzzle[(int)(idx / Globals.selectedPuzzle.Rows), (idx % Globals.selectedPuzzle.Rows)] = Int32.Parse(t.Text);
+                else Globals.selectedPuzzle[(int)(idx / Globals.selectedPuzzle.Rows), (idx % Globals.selectedPuzzle.Rows)] = 0;
+            }
+
+            SaveForm sf = new SaveForm();
+            sf.ShowDialog();
+        }
     }
 }

@@ -56,5 +56,24 @@ namespace Assignment5
 
             return puzzles;
         }
+
+        public static bool save_puzzle(string name)
+        {
+            StreamReader directoryInput = new StreamReader(@"./Saves/directory.txt");
+            string linein;
+            while ((linein = directoryInput.ReadLine()) != null)
+                if (linein == (name + ".txt"))
+                {
+                    directoryInput.Close();
+                    return false;
+                }
+            directoryInput.Close();
+
+
+            selectedPuzzle.save("./Saves/"+name+".txt");
+            File.AppendAllText("./Saves/directory.txt", (name + ".txt") + Environment.NewLine);
+
+            return true;
+        }
     }
 }
