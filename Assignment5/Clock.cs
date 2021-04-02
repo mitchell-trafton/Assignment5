@@ -14,7 +14,13 @@ namespace Assignment5
     class Clock
     {
         private Stopwatch stopWatch;
+        private TimeSpan ts;
 
+        public TimeSpan Ts
+        {
+            get { return ts + stopWatch.Elapsed; }
+            set { ts = value; }
+        }
         /***********************************************
          * Simple no fuss constructor that creates a 
          * stopwatch object for our wrapper.
@@ -24,6 +30,12 @@ namespace Assignment5
         public Clock()
         {
             stopWatch = new Stopwatch();
+            ts = new TimeSpan(0);
+        }
+        public Clock(TimeSpan ttime)
+        {
+            stopWatch = new Stopwatch();
+            ts = ttime;
         }
 
 
@@ -72,10 +84,11 @@ namespace Assignment5
          *********************************************/
         public string getTime()
         {
-            TimeSpan time = stopWatch.Elapsed;
+            TimeSpan time = stopWatch.Elapsed + ts;
             string output = "";
             output = (time.Hours + ":" + time.Minutes + ":" + time.Seconds);
             return output;
         }
+
     }
 }

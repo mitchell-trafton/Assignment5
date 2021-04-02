@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace Assignment5
 {
+    /************************************************************
+    * Assignment 5
+    * Programmers: Robert Tyler Trotter z1802019
+    *              Mitchell Trafton     z1831076
+    ***********************************************************/
     class Sudoku
     {
         //variables
@@ -16,11 +21,17 @@ namespace Assignment5
         private int[,] board;
         private int[,] solution;
         private bool[,] validInput;
+        private TimeSpan ts;
         //properties
         public int this[int i, int j]//creating a direct indexer for the board
         {
             get { return board[i, j]; }
             set { board[i, j] = value; }
+        }
+        public TimeSpan Time
+        {
+            get { return ts; }
+            set { ts = value; }
         }
         public int Rows
         {
@@ -42,7 +53,7 @@ namespace Assignment5
             get { return validInput; }
             set { }
         }
-        //constructor
+        //default constructor
         public Sudoku()
         {
             int rows = 1;
@@ -58,8 +69,13 @@ namespace Assignment5
         public Sudoku(string filePath)
         {
             loadIn(filePath);
+            ts = new TimeSpan(0);
         }
         /**************************************
+         * void loadin
+         * purpose: Read from a file and populate
+         * the sudoku, whether that's an origional
+         * or a save
          * 
          *************************************/
         private void loadIn(string fileName)
@@ -70,7 +86,7 @@ namespace Assignment5
                 int index = 0;
                 int index2 = 0;
                 int blockCount = 0; //used for counting the blocks of data read and controlling storage, initial puzzles will have 2, save files will have 3
-                Dictionary<int, int[]> loading = new Dictionary<int, int[]>();
+                Dictionary<int, int[]> loading = new Dictionary<int, int[]>(); //used for extracting the problem and solution grids
                 Dictionary<int, bool[]> markers = new Dictionary<int, bool[]>(); // used for labeling the valid changing values for user
                 while ((line = file.ReadLine()) != null)
                 {
@@ -83,9 +99,8 @@ namespace Assignment5
                         markers.Add(index, new bool[line.Length]);
                         for (int i = 0; i < rows; i++)
                         {
-                            Console.WriteLine("LoadIn: Reading character: " + line.Substring(i, 1));
+
                             loading[index][i] = Int32.Parse(line.Substring(i, 1));
-                            Console.WriteLine("LoadIn: Reading stored Character: " + loading[index][i]);
                             //checks to see if this is a default input or not, and then sets the permissions accordingly.
                             if (blockCount < 1)
                             {
@@ -117,6 +132,14 @@ namespace Assignment5
                         index = 0;
 
                     }
+                    else if (line.Length == 0 && blockCount >=2)
+                    {
+                        if((line = file.ReadLine()) != null)
+                        {
+                            int t = Int32.Parse(line); //converts the timespan to an int to load
+                            ts = new TimeSpan(t);//load the timespan from the save, to be used to create the timer
+                        }
+                    }
                     else if (blockCount >=2)//save file boolean checker
                     {
                         blockCount++;
@@ -136,7 +159,6 @@ namespace Assignment5
 
                 }
                 //now we store solution
-                Console.WriteLine("Solution:");
                 solution = new int[rows, columns];
                 for (int i = 0; i < rows; i++)
                 {
@@ -147,21 +169,24 @@ namespace Assignment5
                     }
                 }
                 //save the valid input
-                Console.WriteLine("valid input");
                 validInput = new bool[rows, columns];
                 for (int i = 0; i < rows; i++)
                 {
                     for (int j = 0; j < columns; j++)
                     {
                         validInput[i, j] = markers[i][j];
-                        Console.WriteLine(validInput[i, j]);//debug output
                     }
                 }
             }
         }
-        /*
-         * 
-         */
+        /*********************************************************
+         * void Save
+         * Purpose: saves the current puzzle by block
+         * first is the current work
+         * second block is the solution
+         * third is the user modifyable section
+         * fourth is the current time of the save
+         *********************************************************/
 
         public void save(string filepath)
         {
@@ -171,7 +196,7 @@ namespace Assignment5
                 //write in the current board state
                 for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; i < columns; j++)
+                    for (int j = 0; j < columns; j++)
                     {
                         line.Append((char)board[i, j]);
                     }
@@ -184,7 +209,7 @@ namespace Assignment5
                 file.Write(line);
                 for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; i < columns; j++)
+                    for (int j = 0; j < columns; j++)
                     {
                         line.Append((char)solution[i, j]);
                     }
@@ -193,9 +218,11 @@ namespace Assignment5
                     line = "";
                 }
                 //valid moves
+                line = "\n";
+                file.Write(line);
                 for (int i = 0; i < rows; i++)
                 {
-                    for (int j = 0; i < columns; j++)
+                    for (int j = 0; j < columns; j++)
                     {
                         int conversion;
                         if (validInput[i, j])
@@ -207,6 +234,9 @@ namespace Assignment5
                     line.Append('\n');
                     file.Write(line);
                     line = "";
+                    line = "\n";
+                    file.Write(line);
+                    file.Write(ts.Ticks); // writes the amount of ticks in the clock
                 }
             }
         }
