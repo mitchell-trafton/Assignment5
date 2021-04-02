@@ -25,11 +25,17 @@ namespace Assignment5
 
         private void menu_form_Load(object sender, EventArgs e)
         {
+            //set size of window to only fit visible contents
             this.Size = new Size(440, 278);
         }
 
         private void random_btn_Click(object sender, EventArgs e)
         {
+            /************************************************
+             * onclick handler for random_btn
+             * 
+             * Makes random_pnl appear on screen and puzzle_selection_pnl disapear.
+             ************************************************/
             puzzle_selection_pnl.Visible = false;
             random_pnl.Location = RANDOM_PNL_LOC;
             random_pnl.Visible = true;
@@ -37,6 +43,11 @@ namespace Assignment5
 
         private void button1_Click(object sender, EventArgs e)
         {
+            /************************************************
+             * onclick handler for button1 (specific 
+             * 
+             * Makes random_pnl appear on screen and puzzle_selection_pnl disapear.
+             ************************************************/
             puzzle_selection_pnl.Visible = false;
             specific_pnl.Location = SPECIFIC_PNL_LOC;
             specific_pnl.Visible = true;

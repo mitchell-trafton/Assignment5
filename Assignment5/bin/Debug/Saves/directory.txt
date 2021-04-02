@@ -1,1 +1,3 @@
 hardone.txt ./a5/hard/h3.txt
+d.txt ./a5/easy/e2.txt
+a.txt ./a5/easy/e1.txt
