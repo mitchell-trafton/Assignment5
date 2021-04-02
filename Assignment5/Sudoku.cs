@@ -157,7 +157,7 @@ namespace Assignment5
                             markers.Add(index2, new bool[line.Length]);
                             for (int i = 0; i < rows; i++)
                             {
-                                if (Int32.Parse(line.Substring(i, 1)) == 0)
+                                if (Int32.Parse(line.Substring(i, 1)) != 0)
                                 {
                                     markers[index2][i] = true;
                                 }
