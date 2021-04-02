@@ -7,6 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+/************************************************************
+ * Assignment 5
+ * Programmers: Robert Tyler Trotter z1802019
+ *              Mitchell Trafton     z1831076
+ ***********************************************************/
 
 namespace Assignment5
 {
@@ -44,9 +49,9 @@ namespace Assignment5
         private void button1_Click(object sender, EventArgs e)
         {
             /************************************************
-             * onclick handler for button1 (specific 
+             * onclick handler for button1 (specific puzzle)
              * 
-             * Makes random_pnl appear on screen and puzzle_selection_pnl disapear.
+             * Makes specific_pnl appear on screen and puzzle_selection_pnl disapear.
              ************************************************/
             puzzle_selection_pnl.Visible = false;
             specific_pnl.Location = SPECIFIC_PNL_LOC;
@@ -55,6 +60,11 @@ namespace Assignment5
 
         private void resume_btn_Click(object sender, EventArgs e)
         {
+            /************************************************
+             * onclick handler for resume_btn
+             * 
+             * Makes resume_pnl appear on screen and puzzle_selection_pnl disapear.
+             ************************************************/
             if (Globals.get_saved_puzzles().Count == 0)
             {
                 //if there are no saved files, disalay an error message and do nothing
@@ -77,11 +87,19 @@ namespace Assignment5
 
         private void randomDifficulty_cbx_SelectedIndexChanged(object sender, EventArgs e)
         {
+            //enables the play button for random_pnl when a difficulty has been selected for a random game
             playRandom_btn.Enabled = true;
         }
 
         private void puzzleSelect_lbx_SelectedIndexChanged(object sender, EventArgs e)
         {
+            /****************************************************************
+             * index change handler for puzzleSelect_lbx.
+             * 
+             * Enables the play button for specific_pnl.
+             * 
+             * Saves the path of the selected puzzle to the appropriate global variables.
+             ****************************************************************/
             playSpecific_btn.Enabled = true;
 
             Globals.selectedPuzzleLoc = puzzleSelections[puzzleSelect_lbx.SelectedIndex].Split(' ')[0];
@@ -90,6 +108,13 @@ namespace Assignment5
 
         private void resumeSelect_lbx_SelectedIndexChanged(object sender, EventArgs e)
         {
+            /****************************************************************
+             * index change handler for resumeSelect_lbx.
+             * 
+             * Enables the play button for specific_pnl.
+             * 
+             * Saves the path of the selected puzzle to the appropriate global variables.
+             ****************************************************************/
             playResume_btn.Enabled = true;
 
             Globals.selectedPuzzleLoc = puzzleSelections[resumeSelect_lbx.SelectedIndex].Split(' ')[0];
@@ -98,6 +123,13 @@ namespace Assignment5
 
         private void specificDifficulty_cbx_SelectedIndexChanged(object sender, EventArgs e)
         {
+            /****************************************************************
+             * index change handler for specificDifficulty_cbx.
+             * 
+             * Updates the availible puzzles puzzleSelect_lbx according to the selected difficulty.
+             * 
+             * Updates puzzleSelections with availible puzzles to choose from.
+             ****************************************************************/
             puzzleSelect_lbx.Items.Clear();
             puzzleSelections.Clear();
             
@@ -111,9 +143,20 @@ namespace Assignment5
 
         private void playRandom_btn_Click(object sender, EventArgs e)
         {
+            /****************************************************************
+             * onClick handler for playRandom_btn.
+             * 
+             * Selects a random puzzle from the list of availible puzzles in specified
+             * difficulty, filtering for unplayed puzzles if desired (see newPuzzle_ckbx). 
+             * 
+             * Sets desired puzzle file location to appropriate global variables.
+             * 
+             * Pulls up PuzzleForm using LaunchPuzzle();
+             ****************************************************************/
+
             if (Globals.get_availible_puzzles(randomDifficulty_cbx.SelectedItem.ToString(), newPuzzle_ckbx.Checked).Count == 0)
             {
-                //if there are no puzzles matching the user's parameters, display an error message and do nothing
+                //if there are no unplayed puzzles and the user wanted an unplayed puzzle, display an error message and do nothing
                 MessageBox.Show("There are no unplayed puzzles matching your selected diffuculty.", "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -131,22 +174,23 @@ namespace Assignment5
             LaunchPuzzle();
         }
 
-        private void playSpecific_btn_Click(object sender, EventArgs e) { LaunchPuzzle(); }
-        private void playResume_btn_Click(object sender, EventArgs e) { LaunchPuzzle(); }
+        private void playSpecific_btn_Click(object sender, EventArgs e) { LaunchPuzzle(); }//Call LaunchPuzzle() if specific_pnl's play button is pressed
+        private void playResume_btn_Click(object sender, EventArgs e) { LaunchPuzzle(); }//Call LaunchPuzzle() if resume_pnl's play button is pressed
 
         private void LaunchPuzzle()
         {
+            /*****************************************************************
+             * Sets Globals.selectedPuzzle to a new instance of Sudoku() using 
+             * the current Globals.selectedPuzzleLoc value.
+             * 
+             * Pulls up a new instance of PuzzleForm and hides this form.
+             *****************************************************************/
+
             Globals.selectedPuzzle = new Sudoku(Globals.selectedPuzzleLoc);
 
             PuzzleForm pz = new PuzzleForm(this);
             pz.Show();
             this.Hide();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            PuzzleForm pz = new PuzzleForm();
-            pz.Show();
         }
     }
 }
